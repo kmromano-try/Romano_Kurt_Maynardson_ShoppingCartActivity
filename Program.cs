@@ -42,50 +42,77 @@
 
             //################################################### CART AREA ########################################################
 
-            Item? selectedItem = null;
-            int quantity = 0;
+            Item[] cartItems = new Item[10];
+            int[] cartQty = new int[10];
+            int cartCount = 0;
 
-            Console.WriteLine("\n--------- YOUR CART ---------");
-            Console.WriteLine(" (empty)\n");
-            Console.WriteLine("--------------------------------------\n");
+            bool running = true;
 
-            //################################################### USER INPUT ########################################################
 
-            Console.Write("Enter product ID: ");
-            int sid = Convert.ToInt32(Console.ReadLine());
-
-            foreach (Item item in items)
+            while (running)
             {
-                if (item.Id == sid)
+                Console.WriteLine("\n--------- YOUR CART ---------");
+
+                if (cartCount == 0)
                 {
-                    selectedItem = item;
+                    Console.WriteLine(" (empty)");
+                }
+                else
+                {
+                    for (int i = 0; i < cartCount; i++)
+                    {
+                        Console.WriteLine($" {cartItems[i].Name} x{cartQty[i]} = PHP{cartItems[i].Price * cartQty[i]}");
+                    }
+                }
+
+                Console.WriteLine("\n--------------------------------------\n");
+
+                ////################################################### USER INPUT ########################################################
+
+                Console.Write("Enter product ID (0 to exit): ");
+                int sid = Convert.ToInt32(Console.ReadLine());
+
+                if (sid == 0)
+                {
+                    running = false;
                     break;
                 }
+
+                Item? selectedItem = null;
+
+                foreach (Item item in items)
+                {
+                    if (item.Id == sid)
+                    {
+                        selectedItem = item;
+                        break;
+                    }
+                }
+
+                if (selectedItem == null)
+                {
+                    Console.WriteLine("Input ID not found");
+                    continue;
+                }
+
+                Console.WriteLine($"Item Selected: {selectedItem.Name}");
+                Console.Write("Enter quantity: ");
+                int quantity = Convert.ToInt32(Console.ReadLine());
+
+                if (quantity > selectedItem.Stock)
+                {
+                    Console.WriteLine("Input quantity is more than current stock");
+                    continue;
+                }
+
+                selectedItem.Stock -= quantity;
+
+                cartItems[cartCount] = selectedItem;
+                cartQty[cartCount] = quantity;
+                cartCount++;
+
+                Console.WriteLine($"\n{selectedItem.Name} added to cart!");
             }
-
-            if (selectedItem == null)
-            {
-                Console.WriteLine("Input ID not found");
-                return;
-            }
-
-            Console.Write("Enter quantity: ");
-            quantity = Convert.ToInt32(Console.ReadLine());
-
-            if (quantity > selectedItem.Stock)
-            {
-                Console.WriteLine("Input quantity is more than current stock");
-                return;
-            }
-
-            selectedItem.Stock -= quantity;
-
-            //################################################### OUTPUT ########################################################
-
-            Console.WriteLine("\n--------- YOUR CART ---------");
-            Console.WriteLine($" Item: {selectedItem.Name} | Quantity: {quantity} | Total: PHP{selectedItem.Price * quantity}");
-
-            Console.WriteLine($"\n {selectedItem.Name} has been purchased");
         }
     }
 }
