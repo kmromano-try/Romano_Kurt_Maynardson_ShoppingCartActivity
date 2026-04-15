@@ -9,7 +9,8 @@
 
         public void DisplayItems()
         {
-            Console.WriteLine($" | {Id} | {Name} | PHP{Price} | Stock: {Stock} |");
+            Console.WriteLine(
+                $"| {Id,-3} | {Name,-25} | PHP {Price,8:0.00} | {Stock,5} |");
         }
     }
 
@@ -17,16 +18,17 @@
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("ZAWARUDOOO");
-
             //################################################### ITEMS AREA ########################################################
 
             Item[] items = new Item[]
             {
                 new () { Id = 1, Name = "Hany", Price = 4, Stock = 24},
                 new () { Id = 2, Name = "Karate Belt", Price = 2, Stock = 30},
-                new () { Id = 3, Name = "Something na mamahalin", Price = 5000, Stock = 4},
+                new () { Id = 3, Name = "Le Chocolat Bar", Price = 9000, Stock = 4},
                 new () { Id = 4, Name = "Frutos", Price = 1, Stock = 10},
+                new () { Id = 5, Name = "Stick O", Price = 1, Stock = 50},
+                new () { Id = 6, Name = "Six", Price = 7, Stock = 67},
+                new () { Id = 7, Name = "Chocolate Bar", Price = 50, Stock = 64},
             };
 
             //################################################### DISPLAY ITEMS ########################################################
@@ -48,25 +50,26 @@
 
             bool running = true;
 
+            Console.Clear();
+
+            Console.WriteLine("--------- ITEMS 4 SALE ---------");
+            Console.WriteLine("| ID  | NAME                      | PRICE      | STOCK |");
+            Console.WriteLine("----------------------------------------------------------");
+
+            foreach (Item item in items)
+            {
+                item.DisplayItems();
+            }
+
+            Console.WriteLine("\n--------- YOUR CART --------- ");
+            Console.WriteLine("(Duplicate items intentionally don't merge, its for purchase history)");
+
+            Console.WriteLine(" (empty)");
+
+            Console.WriteLine("\n--------------------------------------\n");
 
             while (running)
             {
-                Console.WriteLine("\n--------- YOUR CART --------- (Duplicate items intentionally don't merge, its for purchase history)");
-
-                if (cartCount == 0)
-                {
-                    Console.WriteLine(" (empty)");
-                }
-                else
-                {
-                    for (int i = 0; i < cartCount; i++)
-                    {
-                        Console.WriteLine($" {cartItems[i].Name} x{cartQuantity[i]} = PHP{cartItems[i].Price * cartQuantity[i]:0.00}");
-                    }
-                }
-
-                Console.WriteLine("\n--------------------------------------\n");
-
                 //################################################### USER INPUT ########################################################
 
                 Console.Write("Enter product ID (0 to exit): ");
@@ -82,6 +85,7 @@
                 //======================= RECEIPT CALCULATION AND DISPLAY =========================
                 if (sid == 0)
                 {
+                    Console.Clear();
                     Console.WriteLine("\n========= FINAL RECEIPT =========");
 
                     Item[] totalItems = new Item[10];
@@ -122,13 +126,13 @@
                     //-------------------------------------- DISCOUNT ----------------------------------------------
                     double discount = 0;
 
-                    if (total >= 5000)
+                    if (total >= 9000)
                     {
                         discount = total * 0.10;
-                        Console.WriteLine("PHP 5,000 has been exceeded, you now qualify for a 10% discount, wow!");
+                        Console.WriteLine("PHP 9,000 has been exceeded, you now qualify for a 10% discount, wow!");
                     }
                     //-------------------------------------- DISPLAY -----------------------------------------------
-                    Console.WriteLine("--------------------------------");
+                    Console.WriteLine("\n--------------------------------");
                     Console.WriteLine($"Grand Total: PHP{total:0.00}");
 
                     if (discount > 0)
@@ -140,6 +144,12 @@
 
                     Console.WriteLine($"Final Total: PHP{finalTotal:0.00}");
                     Console.WriteLine("Please Come Again!");
+                    Console.WriteLine("----------------------------------------------------------\n");
+                    Console.WriteLine("---------------------- Final Stock -----------------------");
+                    foreach (Item item in items)
+                    {
+                        item.DisplayItems();
+                    }
 
                     break;
                 }
@@ -172,6 +182,27 @@
                     Console.WriteLine("Invalid input. Please enter a number.");
                     continue;
                 }
+                //================ INPUT VALIDATION =================
+                if (quantity <= 0)
+                {
+                    Console.WriteLine("You cant grab nothing");
+                    continue;
+                }
+
+                //================ TOTAL CART LIMIT CHECK =================
+                int totalCartQuantity = 0;
+
+                for (int i = 0; i < cartCount; i++)
+                {
+                    totalCartQuantity += cartQuantity[i];
+                }
+
+                if (totalCartQuantity + quantity > 50)
+                {
+                    Console.WriteLine("Cart limit is 50 items total. Cannot add that many.");
+                    continue;
+                }
+                //=========================================================
 
                 if (quantity > selectedItem.Stock)
                 {
@@ -186,6 +217,33 @@
                 cartCount++;
 
                 Console.WriteLine($"\n{selectedItem.Name} added to cart");
+                Console.Clear();
+
+
+
+                Console.WriteLine("--------- ITEMS 4 SALE ---------");
+                Console.WriteLine("| ID  | NAME                      | PRICE      | STOCK |");
+                Console.WriteLine("----------------------------------------------------------");
+
+                foreach (Item item in items)
+                {
+                    item.DisplayItems();
+                }
+
+                Console.WriteLine("\n--------- YOUR CART --------- ");
+                Console.WriteLine("(Duplicate items intentionally don't merge, its for purchase history)");
+                if (cartCount == 0)
+                {
+                    Console.WriteLine(" (empty)");
+                }
+                else
+                {
+                    for (int i = 0; i < cartCount; i++)
+                    {
+                        Console.WriteLine($"| {cartItems[i].Name,-25} | x{cartQuantity[i],2} | PHP {(cartItems[i].Price * cartQuantity[i]):0.00,10} |");
+                    }
+                }
+                Console.WriteLine("\n--------------------------------------\n");
             }
         }
     }
