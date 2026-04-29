@@ -7,10 +7,29 @@
         public double Price;
         public int Stock;
 
+        // display
         public void DisplayItems()
         {
             Console.WriteLine(
                 $"| {Id,-3} | {Name,-25} | PHP {Price,8:0.00} | {Stock,5} |");
+        }
+
+        // subtotal
+        public double GetItemTotal(int quantity)
+        {
+            return Price * quantity;
+        }
+
+        // check stock
+        public bool HasEnoughStock(int quantity)
+        {
+            return quantity <= Stock;
+        }
+
+        // deduct stock
+        public void DeductStock(int quantity)
+        {
+            Stock -= quantity;
         }
     }
 
@@ -31,24 +50,11 @@
                 new () { Id = 7, Name = "Chocolate Bar", Price = 50, Stock = 64},
             };
 
-            //################################################### DISPLAY ITEMS ########################################################
-
-            Console.WriteLine("--------- ITEMS 4 SALE ---------");
-            Console.WriteLine(" | ID | Name       | Price   | Stock |");
-            Console.WriteLine("--------------------------------------");
-
-            foreach (Item item in items)
-            {
-                item.DisplayItems();
-            }
-
-            //################################################### CART AREA ########################################################
-
-            Item[] cartItems = new Item[10];
+            Item[] cartItems = new Item[10]; 
             int[] cartQuantity = new int[10];
             int cartCount = 0;
 
-            bool running = true;
+            //################################################### DISPLAY ITEMS ########################################################
 
             Console.Clear();
 
@@ -68,6 +74,7 @@
 
             Console.WriteLine("\n--------------------------------------\n");
 
+            bool running = true;
             while (running)
             {
                 //################################################### USER INPUT ########################################################
@@ -114,11 +121,12 @@
                         }
                     }
                     //-------------------------------------- CALCULATION -------------------------------------------
+                    
                     double total = 0;
 
                     for (int i = 0; i < totalCount; i++)
                     {
-                        double subtotal = totalItems[i].Price * totalQuantity[i];
+                        double subtotal = totalItems[i].GetItemTotal(totalQuantity[i]);
                         total += subtotal;
 
                         Console.WriteLine($" {totalItems[i].Name} x{totalQuantity[i]} = PHP{subtotal:0.00}");
@@ -126,10 +134,10 @@
                     //-------------------------------------- DISCOUNT ----------------------------------------------
                     double discount = 0;
 
-                    if (total >= 9000)
+                    if (total >= 5000)
                     {
                         discount = total * 0.10;
-                        Console.WriteLine("PHP 9,000 has been exceeded, you now qualify for a 10% discount, wow!");
+                        Console.WriteLine("PHP 5,000 has been exceeded, you now qualify for a 10% discount, wow!");
                     }
                     //-------------------------------------- DISPLAY -----------------------------------------------
                     Console.WriteLine("\n--------------------------------");
@@ -158,7 +166,7 @@
 
                 Item? selectedItem = null;
 
-                foreach (Item item in items)
+                foreach (Item item in items) 
                 {
                     if (item.Id == sid)
                     {
@@ -170,7 +178,7 @@
                 if (selectedItem == null)
                 {
                     Console.WriteLine("Input ID not found");
-                    continue;
+                    continue; 
                 }
 
                 Console.WriteLine($"Item Selected: {selectedItem.Name}");
@@ -190,8 +198,8 @@
                 }
 
                 //================ TOTAL CART LIMIT CHECK =================
+                
                 int totalCartQuantity = 0;
-
                 for (int i = 0; i < cartCount; i++)
                 {
                     totalCartQuantity += cartQuantity[i];
@@ -204,14 +212,22 @@
                 }
                 //=========================================================
 
-                if (quantity > selectedItem.Stock)
+                if (!selectedItem.HasEnoughStock(quantity))
                 {
                     Console.WriteLine("Input quantity is more than current stock");
                     continue;
+                }  
+
+                if (cartCount >= cartItems.Length)
+                {
+                    Console.WriteLine("Cart is full.");
+                    continue;
                 }
 
-                selectedItem.Stock -= quantity;
+                // deduct
+                selectedItem.DeductStock(quantity);
 
+                // add items into cart
                 cartItems[cartCount] = selectedItem;
                 cartQuantity[cartCount] = quantity;
                 cartCount++;
@@ -219,7 +235,7 @@
                 Console.WriteLine($"\n{selectedItem.Name} added to cart");
                 Console.Clear();
 
-
+                //#####################################################################################
 
                 Console.WriteLine("--------- ITEMS 4 SALE ---------");
                 Console.WriteLine("| ID  | NAME                      | PRICE      | STOCK |");
@@ -240,7 +256,7 @@
                 {
                     for (int i = 0; i < cartCount; i++)
                     {
-                        Console.WriteLine($"| {cartItems[i].Name,-25} | x{cartQuantity[i],2} | PHP {(cartItems[i].Price * cartQuantity[i]):0.00,10} |");
+                        Console.WriteLine($"| {cartItems[i].Name,-25} | x{cartQuantity[i],2} | PHP {(cartItems[i].GetItemTotal(cartQuantity[i])):0.00,10} |");
                     }
                 }
                 Console.WriteLine("\n--------------------------------------\n");
