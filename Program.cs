@@ -35,6 +35,40 @@
 
     internal class Program
     {
+        // moved the display item in Main into a method so it only has to be called in main
+        static void DisplayItems(Item[] items)
+        {
+            Console.WriteLine("--------- ITEMS 4 SALE ---------");
+            Console.WriteLine("| ID  | NAME                      | PRICE      | STOCK |");
+            Console.WriteLine("----------------------------------------------------------");
+
+            foreach (Item item in items)
+            {
+                item.DisplayItems();
+            }
+        }
+
+        // also turned display cart into a method to be called in main
+        static void DisplayCart(Item[] cartItems, int[] cartQuantity, int cartCount)
+        {
+            Console.WriteLine("\n--------- YOUR CART --------- ");
+            Console.WriteLine("(Duplicate items intentionally don't merge, its for purchase history)");
+
+            if (cartCount == 0)
+            {
+                Console.WriteLine(" (empty)");
+            }
+            else
+            {
+                for (int i = 0; i < cartCount; i++)
+                {
+                    Console.WriteLine($"| {cartItems[i].Name,-25} | x{cartQuantity[i],2} | PHP {(cartItems[i].GetItemTotal(cartQuantity[i])):0.00,10} |");
+                }
+            }
+
+            Console.WriteLine("\n--------------------------------------\n");
+        }
+
         static void Main(string[] args)
         {
             //################################################### ITEMS AREA ########################################################
@@ -54,25 +88,15 @@
             int[] cartQuantity = new int[10];
             int cartCount = 0;
 
-            //################################################### DISPLAY ITEMS ########################################################
+            //################################################### DISPLAY ITEMS AND CART ########################################################
 
             Console.Clear();
 
-            Console.WriteLine("--------- ITEMS 4 SALE ---------");
-            Console.WriteLine("| ID  | NAME                      | PRICE      | STOCK |");
-            Console.WriteLine("----------------------------------------------------------");
+            // moved the old display item block into a method
+            DisplayItems(items);
 
-            foreach (Item item in items)
-            {
-                item.DisplayItems();
-            }
-
-            Console.WriteLine("\n--------- YOUR CART --------- ");
-            Console.WriteLine("(Duplicate items intentionally don't merge, its for purchase history)");
-
-            Console.WriteLine(" (empty)");
-
-            Console.WriteLine("\n--------------------------------------\n");
+            // same with display items
+            DisplayCart(cartItems, cartQuantity, cartCount);
 
             bool running = true;
             while (running)
@@ -237,29 +261,11 @@
 
                 //#####################################################################################
 
-                Console.WriteLine("--------- ITEMS 4 SALE ---------");
-                Console.WriteLine("| ID  | NAME                      | PRICE      | STOCK |");
-                Console.WriteLine("----------------------------------------------------------");
+                // moved the old display item block into a method
+                DisplayItems(items);
 
-                foreach (Item item in items)
-                {
-                    item.DisplayItems();
-                }
-
-                Console.WriteLine("\n--------- YOUR CART --------- ");
-                Console.WriteLine("(Duplicate items intentionally don't merge, its for purchase history)");
-                if (cartCount == 0)
-                {
-                    Console.WriteLine(" (empty)");
-                }
-                else
-                {
-                    for (int i = 0; i < cartCount; i++)
-                    {
-                        Console.WriteLine($"| {cartItems[i].Name,-25} | x{cartQuantity[i],2} | PHP {(cartItems[i].GetItemTotal(cartQuantity[i])):0.00,10} |");
-                    }
-                }
-                Console.WriteLine("\n--------------------------------------\n");
+                // same with display items
+                DisplayCart(cartItems, cartQuantity, cartCount);
             }
         }
     }
