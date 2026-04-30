@@ -1,6 +1,8 @@
-This push changes a lot of the structure of the code, first instead of working directly in main the add to cart and other logics are turned into methods and are instead called into main.
-Implemented a menu system in accordance to the requirements for part 2
+Finished the checkout method, from the pre-existing code added a new payment and change logic.
+After user checksout they are prompted to buy again or exit.
+Instead of view cart i made it so that cart is toggleable, because its a better design.
+
 
 
 AI usage in this push:
- Had help from AI on making the additem method, most of the code logic were preexisting so i only had to move them out of main however i ran into a problem which AI helped in and explained, the problem was fixed by simply adding a "ref" or reference in one of the variables apparently allowing it to be modified.
+ Before pushing I had AI check if i missed any errors and it pointed out that after checking out if the user chooses to go back, the car isnt cleared. The problem was fixed by setting cartCount to 0.

@@ -68,7 +68,7 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
                 }
             }
 
-            Console.WriteLine("\n--------------------------------------\n");
+            Console.WriteLine("\n-----------------------------------\n");
         }
 
         // moving the whole user input and add to cart logic into a method as well,
@@ -154,8 +154,130 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
             Console.WriteLine($"\n{selectedItem.Name} added to cart");
         }
 
-        // will add a method for checkout below
+        // checkout method, including the discount
 
+        static bool Checkout(Item[] cartItems, int[] cartQuantity, ref int cartCount)
+        {
+            // validation
+            if (cartCount == 0)
+            {
+                Console.WriteLine("Your cart is empty");
+                return true;
+            }
+
+            Console.Clear();
+            Console.WriteLine("\n========= FINAL RECEIPT =========");
+
+            Item[] totalItems = new Item[10];
+            int[] totalQuantity = new int[10];
+            int totalCount = 0;
+
+            // merge the duplicates (duplicates are allowed in cart for purchase history, it is intentionall)
+            for (int i = 0; i < cartCount; i++)
+            {
+                bool found = false;
+
+                for (int j = 0; j < totalCount; j++)
+                {
+                    if (totalItems[j].Id == cartItems[i].Id)
+                    {
+                        totalQuantity[j] += cartQuantity[i];
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    totalItems[totalCount] = cartItems[i];
+                    totalQuantity[totalCount] = cartQuantity[i];
+                    totalCount++;
+                }
+            }
+
+            // total
+            double total = 0;
+
+            for (int i = 0; i < totalCount; i++)
+            {
+                double subtotal = totalItems[i].GetItemTotal(totalQuantity[i]);
+                total += subtotal;
+
+                Console.WriteLine($"{totalItems[i].Name} x{totalQuantity[i]} = PHP{subtotal:0.00}");
+            }
+
+            // discount (also fixed the discount threshhold only applying if the code scans the total and its over 9 thousand)
+            double discount = 0;
+
+            if (total >= 5000)
+            {
+                discount = total * 0.10;
+                Console.WriteLine("10% discount applied!");
+            }
+
+            Console.WriteLine("\n--------------------------------");
+            Console.WriteLine($"Grand Total: PHP{total:0.00}");
+
+            if (discount > 0)
+            {
+                Console.WriteLine($"Discount: PHP{discount:0.00}");
+            }
+
+            double finalTotal = total - discount;
+            Console.WriteLine($"Final Total: PHP{finalTotal:0.00}");
+
+
+            // this part of the code is new, this adds a payment logic where the user inputs how much money they give
+            double payment = 0;
+
+            while (true)
+            {
+                Console.Write("Enter payment amount: ");
+
+                if (!double.TryParse(Console.ReadLine(), out payment))
+                {
+                    Console.WriteLine("Invalid input.");
+                    continue;
+                }
+
+                if (payment < finalTotal)
+                {
+                    Console.WriteLine("Insufficient Funds");
+                    continue;
+                }
+
+                break;
+            }
+
+            // this calculates the change to be given.
+            double change = payment - finalTotal;
+
+            Console.WriteLine($"Payment: PHP{payment:0.00}");
+            Console.WriteLine($"Change: PHP{change:0.00}");
+            Console.WriteLine("Thank you come again!");
+
+            // prompt the user to go back or exit
+            while (true)
+            {
+                Console.Write("\nGo back? (Y/N): ");
+                string? input = Console.ReadLine()?.ToUpper();
+
+                if (input == "Y")
+                {
+                    cartCount = 0;
+                    Console.Clear();
+                    return true;
+                }
+                else if (input == "N")
+                {
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input.");
+                }
+            }
+        }
 
 
         // main
@@ -181,13 +303,19 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
             //################################################### DISPLAY ITEMS AND CART ########################################################
 
             Console.Clear();
-            DisplayItems(items);
-            // removed the old display codes to implement the menu system
+            //DisplayItems(items);
 
+            bool showCart = false;
             bool running = true;
             while (running)
             {
-                // implementing menu system
+                DisplayItems(items);
+
+                //bool showCart = false;
+                if (showCart == true)
+                {
+                    DisplayCart(cartItems, cartQuantity, cartCount);
+                }
 
                 Console.WriteLine("\n========= MENU =========");
                 Console.WriteLine("1 - Add Item to Cart");
@@ -212,16 +340,25 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
 
                     case 1:
                         AddItem(items, cartItems, cartQuantity, ref cartCount);
+                        Console.Clear();
+                        //DisplayItems(items);
                         break;
 
                     case 2:
                         Console.Clear();
-                        DisplayItems(items);
-                        DisplayCart(cartItems, cartQuantity, cartCount);
+                        if (showCart == false) // instead of show cart i made it so that it toggles cart instead so you dont have to keep showing cart to see what you have, its just better
+                        {
+                            showCart = true;
+                        }
+                        else
+                        {
+                            showCart = false;
+                        }
+                        //DisplayCart(cartItems, cartQuantity, cartCount);
                         break;
 
                     case 3:
-                        //checkout
+                        running = Checkout(cartItems, cartQuantity, ref cartCount);
                         break;
 
                     default:
