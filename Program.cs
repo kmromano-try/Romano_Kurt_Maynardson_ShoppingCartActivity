@@ -44,6 +44,10 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
         // receipt number
         static int receiptCounter = 1;
 
+        // stores receipts
+        static string[] orderHistory = new string[50];
+        static int orderCount = 0;
+
         // moved the display item in Main into a method so it only has to be called in main
         static void DisplayItems(Item[] items)
         {
@@ -177,8 +181,8 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
             Console.WriteLine($"Receipt No: {receiptCounter}");
             Console.WriteLine($"DateTime: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            Item[] totalItems = new Item[10];
-            int[] totalQuantity = new int[10];
+            Item[] totalItems = new Item[50];
+            int[] totalQuantity = new int[50];
             int totalCount = 0;
 
             // merge the duplicates (duplicates are allowed in cart for purchase history, it is intentional)
@@ -266,6 +270,13 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
             Console.WriteLine("Thank you come again!");
 
             // adds to the receipt number
+            receiptCounter++;
+
+            // stores receipt history
+            string record = $"Receipt #{receiptCounter} - PHP{finalTotal:0.00}";
+            orderHistory[orderCount] = record;
+            orderCount++;
+
             receiptCounter++;
 
             // prompt the user to go back or exit
@@ -436,6 +447,27 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
             }
         }
 
+        // receipt history
+        static void ShowOrderHistory()
+        {
+            Console.WriteLine("\n========= ORDER HISTORY =========");
+
+            if (orderCount == 0)
+            {
+                Console.WriteLine("No transactions yet.");
+            }
+            else
+            { // loop through order history and print
+                for (int i = 0; i < orderCount; i++)
+                {
+                    Console.WriteLine(orderHistory[i]);
+                }
+            }
+
+            Console.WriteLine("\nPress Enter to return...");
+            Console.ReadLine();
+        }
+
         // main
         static void Main(string[] args)
         {
@@ -458,23 +490,20 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
                 new () { Id = 13, Category = "Vegetables", Name = "Okra", Price = 6, Stock = 20},
             };
 
-            Item[] cartItems = new Item[10]; 
-            int[] cartQuantity = new int[10];
+            Item[] cartItems = new Item[50]; 
+            int[] cartQuantity = new int[50];
             int cartCount = 0;
 
             //################################################### DISPLAY ITEMS AND CART ########################################################
 
             Console.Clear();
-            //DisplayItems(items);
 
             bool showCart = false;
             bool running = true;
             while (running)
             {
-                //Console.Clear();
                 DisplayItems(items);
 
-                //bool showCart = false;
                 if (showCart == true)
                 {
                     DisplayCart(cartItems, cartQuantity, cartCount);
@@ -486,6 +515,7 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
                 Console.WriteLine("3 - Checkout");
                 Console.WriteLine("4 - Search Item By ID, Name, or Category");
                 Console.WriteLine("5 - Manage Cart");
+                Console.WriteLine("6 - View Order History");
                 Console.WriteLine("0 - Exit");
                 Console.Write("Choose option: ");
 
@@ -506,7 +536,6 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
                     case 1:
                         AddItem(items, cartItems, cartQuantity, ref cartCount);
                         Console.Clear();
-                        //DisplayItems(items);
                         break;
 
                     case 2:
@@ -519,7 +548,6 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
                         {
                             showCart = false;
                         }
-                        //DisplayCart(cartItems, cartQuantity, cartCount);
                         break;
 
                     case 3:
@@ -533,6 +561,11 @@ namespace Romano_Kurt_Maynardson_ShoppingCartActivity
 
                     case 5:
                         ManageCart(cartItems, cartQuantity, ref cartCount);
+                        break;
+
+                    case 6:
+                        Console.Clear();
+                        ShowOrderHistory();
                         break;
 
                     default:

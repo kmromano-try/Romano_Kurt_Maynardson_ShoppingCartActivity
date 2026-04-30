@@ -1,13 +1,8 @@
-Added low stock warning, receipt counter, and receipt datetime. 
-Updated item objects and display headers to include categories.
-Added item search method, will loop through ID, name, and category to find a match with the input.
-Added cart management, inside you can remove items or clear the cart entirely
+Forgot to add receipt history to last push
 
 
 AI usage in this push:
- Had help from AI for the validation in search method, the isnullorwhitespace is a new line to me.
- Had help from AI to add the category into the console.writeline($"")s and making it align
- For the search method, typing "3" will work but "03" will result in an error so AI helped with making the validation stronger
+ It was AI that alerted me of the missing feature, had help solving a simple problem where receipt 1 is stored as receipt 2 instead,
 
 Description: 
 	This is now the complete Shopping Cart Activity Part 2, with Cart Management, low stock error, search function and category.
