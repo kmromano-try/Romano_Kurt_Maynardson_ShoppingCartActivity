@@ -1,25 +1,11 @@
-This is the final version
-This commit adds:
-Cleaner formatting
-Made it so that after adding item to cart and after checking out, the terminal is cleared for cleaner output
-More items to purchase
-Cart can now only hold 50 items
+Forgot to add receipt history to last push
 
 
-This version is now a fully functioning shopping cart system with clean UI.
+AI usage in this push:
+ It was AI that alerted me of the missing feature, had help solving a simple problem where receipt 1 is stored as receipt 2 instead,
 
-Had help from AI to convert convert:
-Formatting for cleaner output, 
-Debugging a few errors such as the cart being displayed twice
+Description: 
+	This is now the complete Shopping Cart Activity Part 2, with Cart Management, low stock error, search function and category.
 
-
-
-DESCRIPTION: 
-This is an activity for Programming, The Shopping Cart System written in C# allows users to select items from a list by inputting matching item id.
-At checkout the program calculates the grand total and applies discount if applicable, then the receipt and final stock is displayed.
-
-Overall AI Usage:
-AI was used as a very helpful guide and learning tool, AI helped debug several problems that I encountered which helped me progress and learn from my mistakes.
-
-
-
+Overall AI usage (more details on each commit):
+	I wanted the AI usage to be limited to solving problems that took me too much time. There were times where functions i havent learned yet were used so in using AI I made sure to learn these as well. The design and the flow etc such as the toggleable cart was made entirely by me.
