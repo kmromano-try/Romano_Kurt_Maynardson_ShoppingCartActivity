@@ -1,4 +1,6 @@
-﻿namespace Romano_Kurt_Maynardson_ShoppingCartActivity
+﻿using System.ComponentModel;
+
+namespace Romano_Kurt_Maynardson_ShoppingCartActivity
 {
     class Item
     {
@@ -69,6 +71,94 @@
             Console.WriteLine("\n--------------------------------------\n");
         }
 
+        // moving the whole user input and add to cart logic into a method as well,
+        static void AddItem(Item[] items, Item[] cartItems,int[] cartQuantity,ref int cartCount)
+        {
+            Console.Write("Enter product ID (0 to exit): ");
+            int sid;
+
+            if (!int.TryParse(Console.ReadLine(), out sid))
+            {
+                Console.WriteLine("Invalid input. Please enter a number.");
+                return;
+            }
+
+            if (sid == 0)
+            {
+                return;
+            }
+
+            Item? selectedItem = null;
+
+            foreach (Item item in items)
+            {
+                if (item.Id == sid)
+                {
+                    selectedItem = item;
+                    break;
+                }
+            }
+
+            if (selectedItem == null)
+            {
+                Console.WriteLine("Input ID not found");
+                return;
+            }
+
+            Console.WriteLine($"Item Selected: {selectedItem.Name}");
+            Console.Write("Enter quantity: ");
+            int quantity;
+
+            if (!int.TryParse(Console.ReadLine(), out quantity))
+            {
+                Console.WriteLine("Invalid input. Please enter a number.");
+                return;
+            }
+
+            if (quantity <= 0)
+            {
+                Console.WriteLine("You cant grab nothing");
+                return;
+            }
+
+            int totalCartQuantity = 0;
+            for (int i = 0; i < cartCount; i++)
+            {
+                totalCartQuantity += cartQuantity[i];
+            }
+
+            if (totalCartQuantity + quantity > 50)
+            {
+                Console.WriteLine("Cart limit is 50 items total. Cannot add that many.");
+                return;
+            }
+
+            if (!selectedItem.HasEnoughStock(quantity))
+            {
+                Console.WriteLine("Input quantity is more than current stock");
+                return;
+            }
+
+            if (cartCount >= cartItems.Length)
+            {
+                Console.WriteLine("Cart is full.");
+                return;
+            }
+
+            selectedItem.DeductStock(quantity);
+
+            cartItems[cartCount] = selectedItem;
+            cartQuantity[cartCount] = quantity;
+            cartCount++;
+
+            Console.WriteLine($"\n{selectedItem.Name} added to cart");
+        }
+
+        // will add a method for checkout below
+
+
+
+        // main
         static void Main(string[] args)
         {
             //################################################### ITEMS AREA ########################################################
@@ -91,181 +181,53 @@
             //################################################### DISPLAY ITEMS AND CART ########################################################
 
             Console.Clear();
-
-            // moved the old display item block into a method
             DisplayItems(items);
-
-            // same with display items
-            DisplayCart(cartItems, cartQuantity, cartCount);
+            // removed the old display codes to implement the menu system
 
             bool running = true;
             while (running)
             {
-                //################################################### USER INPUT ########################################################
+                // implementing menu system
 
-                Console.Write("Enter product ID (0 to exit): ");
-                int sid;
+                Console.WriteLine("\n========= MENU =========");
+                Console.WriteLine("1 - Add Item to Cart");
+                Console.WriteLine("2 - Toggle Cart");
+                Console.WriteLine("3 - Checkout");
+                Console.WriteLine("0 - Exit");
+                Console.Write("Choose option: ");
 
-                if (!int.TryParse(Console.ReadLine(), out sid))
+                int choice;
+
+                if (!int.TryParse(Console.ReadLine(), out choice))
                 {
-                    Console.WriteLine("Invalid input. Please enter a number.");
+                    Console.WriteLine("Invalid input. Enter a number.");
                     continue;
                 }
 
-
-                //======================= RECEIPT CALCULATION AND DISPLAY =========================
-                if (sid == 0)
+                switch (choice)
                 {
-                    Console.Clear();
-                    Console.WriteLine("\n========= FINAL RECEIPT =========");
-
-                    Item[] totalItems = new Item[10];
-                    int[] totalQuantity = new int[10];
-                    int totalCount = 0;
-
-                    for (int i = 0; i < cartCount; i++)
-                    {
-                        bool found = false;
-
-                        for (int j = 0; j < totalCount; j++)
-                        {
-                            if (totalItems[j].Id == cartItems[i].Id)
-                            {
-                                totalQuantity[j] += cartQuantity[i];
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (!found)
-                        {
-                            totalItems[totalCount] = cartItems[i];
-                            totalQuantity[totalCount] = cartQuantity[i];
-                            totalCount++;
-                        }
-                    }
-                    //-------------------------------------- CALCULATION -------------------------------------------
-                    
-                    double total = 0;
-
-                    for (int i = 0; i < totalCount; i++)
-                    {
-                        double subtotal = totalItems[i].GetItemTotal(totalQuantity[i]);
-                        total += subtotal;
-
-                        Console.WriteLine($" {totalItems[i].Name} x{totalQuantity[i]} = PHP{subtotal:0.00}");
-                    }
-                    //-------------------------------------- DISCOUNT ----------------------------------------------
-                    double discount = 0;
-
-                    if (total >= 5000)
-                    {
-                        discount = total * 0.10;
-                        Console.WriteLine("PHP 5,000 has been exceeded, you now qualify for a 10% discount, wow!");
-                    }
-                    //-------------------------------------- DISPLAY -----------------------------------------------
-                    Console.WriteLine("\n--------------------------------");
-                    Console.WriteLine($"Grand Total: PHP{total:0.00}");
-
-                    if (discount > 0)
-                    {
-                        Console.WriteLine($"Discount (10%): PHP{discount:0.00}");
-                    }
-
-                    double finalTotal = total - discount;
-
-                    Console.WriteLine($"Final Total: PHP{finalTotal:0.00}");
-                    Console.WriteLine("Please Come Again!");
-                    Console.WriteLine("----------------------------------------------------------\n");
-                    Console.WriteLine("---------------------- Final Stock -----------------------");
-                    foreach (Item item in items)
-                    {
-                        item.DisplayItems();
-                    }
-
-                    break;
-                }
-
-                //=========================================================================================
-
-                Item? selectedItem = null;
-
-                foreach (Item item in items) 
-                {
-                    if (item.Id == sid)
-                    {
-                        selectedItem = item;
+                    case 0:
+                        running = false;
                         break;
-                    }
+
+                    case 1:
+                        AddItem(items, cartItems, cartQuantity, ref cartCount);
+                        break;
+
+                    case 2:
+                        Console.Clear();
+                        DisplayItems(items);
+                        DisplayCart(cartItems, cartQuantity, cartCount);
+                        break;
+
+                    case 3:
+                        //checkout
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid Input");
+                        break;
                 }
-
-                if (selectedItem == null)
-                {
-                    Console.WriteLine("Input ID not found");
-                    continue; 
-                }
-
-                Console.WriteLine($"Item Selected: {selectedItem.Name}");
-                Console.Write("Enter quantity: ");
-                int quantity;
-
-                if (!int.TryParse(Console.ReadLine(), out quantity))
-                {
-                    Console.WriteLine("Invalid input. Please enter a number.");
-                    continue;
-                }
-                //================ INPUT VALIDATION =================
-                if (quantity <= 0)
-                {
-                    Console.WriteLine("You cant grab nothing");
-                    continue;
-                }
-
-                //================ TOTAL CART LIMIT CHECK =================
-                
-                int totalCartQuantity = 0;
-                for (int i = 0; i < cartCount; i++)
-                {
-                    totalCartQuantity += cartQuantity[i];
-                }
-
-                if (totalCartQuantity + quantity > 50)
-                {
-                    Console.WriteLine("Cart limit is 50 items total. Cannot add that many.");
-                    continue;
-                }
-                //=========================================================
-
-                if (!selectedItem.HasEnoughStock(quantity))
-                {
-                    Console.WriteLine("Input quantity is more than current stock");
-                    continue;
-                }  
-
-                if (cartCount >= cartItems.Length)
-                {
-                    Console.WriteLine("Cart is full.");
-                    continue;
-                }
-
-                // deduct
-                selectedItem.DeductStock(quantity);
-
-                // add items into cart
-                cartItems[cartCount] = selectedItem;
-                cartQuantity[cartCount] = quantity;
-                cartCount++;
-
-                Console.WriteLine($"\n{selectedItem.Name} added to cart");
-                Console.Clear();
-
-                //#####################################################################################
-
-                // moved the old display item block into a method
-                DisplayItems(items);
-
-                // same with display items
-                DisplayCart(cartItems, cartQuantity, cartCount);
             }
         }
     }
